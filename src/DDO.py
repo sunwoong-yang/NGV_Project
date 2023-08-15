@@ -4,12 +4,12 @@ from sklearn.gaussian_process.kernels import ConstantKernel, Matern, RBF
 import numpy as np
 
 class DDO(): # Data-Driven Optimization
-    def __init__(self, file_name = 'LHS180_t1.xlsx'):
-        self.read_excel(file_name)
+    def __init__(self, proj_name=""):
+        self.proj_name = proj_name
 
     def read_excel(self, file_name = 'LHS180_t1.xlsx'):
-        df_info = pd.read_excel(file_name, "info").fillna(np.nan).replace([np.nan], [None])
-        df = pd.read_excel(file_name, "conv")
+        df_info = pd.read_excel(f'Projects/{self.proj_name}/{file_name}', "info").fillna(np.nan).replace([np.nan], [None])
+        df = pd.read_excel(f'Projects/{self.proj_name}/{file_name}', "conv")
         self.QoI_direction = np.ones(len(df_info["QoI"]))
         for idx, (min, max) in enumerate(zip(df_info["minimize"], df_info["maximize"])):
             if (min is None) and (max is not None): # if maximization, direction = -1
@@ -47,8 +47,10 @@ class DDO(): # Data-Driven Optimization
         self.x_test, self.y_test = x_shuffled[self.train_size:], y_shuffled[self.train_size:]
 
         # Manual elimination of outliers
-        self.x_train = np.delete(self.x_train, [14,50], axis=0)
-        self.y_train = np.delete(self.y_train, [14,50], axis=0)
+        self.x_train = np.delete(self.x_train, self.y_train[:,0]>0.01, axis=0)
+        self.y_train = np.delete(self.y_train, self.y_train[:,0]>0.01, axis=0)
+        self.x_test = np.delete(self.x_test, self.y_test[:,0]>0.01, axis=0)
+        self.y_test = np.delete(self.y_test, self.y_test[:,0]>0.01, axis=0)
 
     def fit(self, **kwargs):
 

@@ -5,7 +5,7 @@ from pymoo.core.problem import ElementwiseProblem
 from pymoo.termination import get_termination
 from pymoo.optimize import minimize
 from scipy.stats import norm
-
+import os
 
 class Optimizer():
 
@@ -132,12 +132,16 @@ class Optimizer():
         write_data = pd.DataFrame(np.concatenate([x_optimized, y_optimized],axis=1))
         write_data.columns = self.ddo_cls.x_list + self.ddo_cls.y_list
         self.write_data = write_data
-        write_data.to_excel(f"{filename}.xlsx", index=False)
+        if not os.path.exists(f"Projects/{self.ddo_cls.proj_name}/results"):
+            os.makedirs(f"Projects/{self.ddo_cls.proj_name}/results")
+        write_data.to_excel(f"Projects/{self.ddo_cls.proj_name}/results/{filename}.xlsx", index=False)
 
     def save_queries(self, x, y, filename=""):
         write_data = pd.DataFrame(np.concatenate([x, y],axis=1))
         write_data.columns = self.ddo_cls.x_list + self.ddo_cls.y_list
         self.write_data = write_data
-        write_data.to_excel(f"{filename}.xlsx", index=False)
+        if not os.path.exists(f"Projects/{self.ddo_cls.proj_name}/results"):
+            os.makedirs(f"Projects/{self.ddo_cls.proj_name}/results")
+        write_data.to_excel(f"Projects/{self.ddo_cls.proj_name}/results/{filename}.xlsx", index=False)
 
         return write_data

@@ -4,14 +4,14 @@ import seaborn as sns
 import os
 
 class Scatter():
-    def __init__(self, parent_cls):
-        self.parent_cls = parent_cls
+    def __init__(self, ddo_cls):
+        self.ddo_cls = ddo_cls
 
     def do(self, y_true=None, y_pred=None, save_fig=True):
         if y_true is None:
-            y_true = self.parent_cls.y_test
+            y_true = self.ddo_cls.y_test
         if y_pred is None: # If y_pred is not given, use the prediction from x_test as "y_pred"
-            y_pred = self.parent_cls.predict()
+            y_pred = self.ddo_cls.predict()
         self.y_true = y_true
         self.y_pred = y_pred
         # def make_plot(y_true, y_pred):
@@ -30,15 +30,15 @@ class Scatter():
         #
         #     return fig, ax
 
-        for y_idx in range(self.parent_cls.n_obj):
+        for y_idx in range(self.ddo_cls.n_obj):
 
             y_true_ = self.y_true[:,y_idx]
             y_pred_ = self.y_pred[:,y_idx]
             fig, ax = self.make_plot(y_true_, y_pred_, y_idx)
             if save_fig:
-                if not os.path.exists("figures"):
-                    os.makedirs("figures")
-                fig.savefig(f"figures/{self.parent_cls.y_list[y_idx]}")
+                if not os.path.exists(f"Projects/{self.ddo_cls.proj_name}/figures"):
+                    os.makedirs(f"Projects/{self.ddo_cls.proj_name}/figures")
+                fig.savefig(f"Projects/{self.ddo_cls.proj_name}/figures/{self.ddo_cls.y_list[y_idx]}")
     def make_plot(self, y_true, y_pred, y_idx=0):
         sns.set_style("white")
         sns.set_palette("Set2")
@@ -51,7 +51,7 @@ class Scatter():
         ax.set_aspect('equal', adjustable='box')
         ax.set_xlabel("Ground truth", fontsize=17)
         ax.set_ylabel("Prediction", fontsize=17)
-        ax.set_title(self.parent_cls.y_list[y_idx], fontsize=20)
+        ax.set_title(self.ddo_cls.y_list[y_idx], fontsize=20)
         # sns.despine(bottom=False, left=False)
         # sns.set_context(rc={'patch.linewidth': 0.0})
 
