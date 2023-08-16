@@ -7,7 +7,7 @@ class DDO(): # Data-Driven Optimization
     def __init__(self, proj_name=""):
         self.proj_name = proj_name
 
-    def read_excel(self, file_name = 'LHS180_t1.xlsx'):
+    def read_excel(self, file_name = 'LHS180_t1.xlsx', train_ratio=0.8, shuffle_seed=42):
         df_info = pd.read_excel(f'Projects/{self.proj_name}/{file_name}', "info").fillna(np.nan).replace([np.nan], [None])
         df = pd.read_excel(f'Projects/{self.proj_name}/{file_name}', "conv")
         self.QoI_direction = np.ones(len(df_info["QoI"]))
@@ -24,7 +24,7 @@ class DDO(): # Data-Driven Optimization
         x_num = sum(word.count("DV") for word in list(df.columns)) # Number of design variables (calculated by how many times "DV" appeared in the indices' name)
         self.x_list = ["DV"+f"{i}" for i in range(x_num)]
         self.y_list = list(df_info["QoI"])
-        self.train_size = int(df.shape[0] * 0.8) # 80% for the train data
+        self.train_size = int(df.shape[0] * train_ratio) # 80% for the train data
 
         x = df[self.x_list].to_numpy()
         y = df[self.y_list].to_numpy()
@@ -33,6 +33,7 @@ class DDO(): # Data-Driven Optimization
         self.n_var = self.x.shape[1]
         self.n_obj = self.y.shape[1]
 
+        self.shuffle(rand_seed=shuffle_seed)
 
     def shuffle(self, rand_seed=42):
 
