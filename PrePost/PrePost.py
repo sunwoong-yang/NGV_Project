@@ -88,3 +88,11 @@ def normalize_multifidelity(data, minmax = True, Scaler=None): # for multi-fidel
         Scaler_list.append(Scaler)
 
     return scaled_data_list, Scaler_list, data
+
+def reject_outliers(x, y, k = 3.):
+    mean = np.mean(y, axis=0)
+    std = np.std(y, axis=0)
+    distance_from_mean = abs(y - mean)
+    not_outlier = distance_from_mean < k * std
+    not_outlier = np.all(not_outlier, axis=1)
+    return x[not_outlier], y[not_outlier]

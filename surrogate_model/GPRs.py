@@ -12,6 +12,7 @@ class GPRs():  # 얘를 그냥 기존 GPR에 넣어서 output dim 알아서 감�
         # for X, Y in dataloader:  # 각 QoI dimension마다 적용되는 for loop가 아님. 수정 필요
         self.train_x, self.train_y = train_x, train_y
         for y_idx in range(self.train_y.shape[1]):
+            print(f"********* {y_idx+1}th GPR training starts *********")
             # individual_data = Ten2Dat(X, Y[:,y_idx])
             individual_gpr = GPR(**self.kwargs)
             individual_gpr.fit(self.train_x, self.train_y[:,[y_idx]])

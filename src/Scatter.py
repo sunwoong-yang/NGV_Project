@@ -31,7 +31,7 @@ class Scatter():
                 if not os.path.exists(f"Projects/{self.ddo_cls.proj_name}/figures"):
                     os.makedirs(f"Projects/{self.ddo_cls.proj_name}/figures")
                 plt.close(fig)
-                fig.savefig(f"Projects/{self.ddo_cls.proj_name}/figures/{self.ddo_cls.y_list[y_idx]}")
+                fig.savefig(f"Projects/{self.ddo_cls.proj_name}/figures/{self.ddo_cls.y_list[y_idx]}.png")
     def make_plot(self, y_true, y_pred, y_idx=0, Rsq=None):
         sns.set_style("white")
         sns.set_palette("Set2")

@@ -2,12 +2,13 @@ from surrogate_model.GPRs import GPRs
 import pandas as pd
 from sklearn.gaussian_process.kernels import ConstantKernel, Matern, RBF
 import numpy as np
+from PrePost.PrePost import reject_outliers
 
 class DDO(): # Data-Driven Optimization
     def __init__(self, proj_name=""):
         self.proj_name = proj_name
 
-    def read_excel(self, file_name = 'LHS180_t1.xlsx', train_ratio=0.8, shuffle_seed=42):
+    def read_excel(self, file_name = 'LHS180_t1.xlsx', train_ratio=0.8, shuffle_seed=42, coef_outlier=3):
         df_info = pd.read_excel(f'Projects/{self.proj_name}/{file_name}', "info").fillna(np.nan).replace([np.nan], [None])
         df = pd.read_excel(f'Projects/{self.proj_name}/{file_name}', "conv")
         self.QoI_direction = np.ones(len(df_info["QoI"]))
@@ -24,10 +25,11 @@ class DDO(): # Data-Driven Optimization
         x_num = sum(word.count("DV") for word in list(df.columns)) # Number of design variables (calculated by how many times "DV" appeared in the indices' name)
         self.x_list = ["DV"+f"{i}" for i in range(x_num)]
         self.y_list = list(df_info["QoI"])
-        self.train_size = int(df.shape[0] * train_ratio) # 80% for the train data
 
         x = df[self.x_list].to_numpy()
         y = df[self.y_list].to_numpy()
+        x,y = reject_outliers(x, y, k=coef_outlier)
+        self.train_size = int(x.shape[0] * train_ratio)  # 80% for the train data
 
         self.x, self.y = x, y
         self.n_var = self.x.shape[1]
@@ -48,10 +50,10 @@ class DDO(): # Data-Driven Optimization
         self.x_test, self.y_test = x_shuffled[self.train_size:], y_shuffled[self.train_size:]
 
         # Manual elimination of outliers
-        self.x_train = np.delete(self.x_train, self.y_train[:,0]>0.01, axis=0)
-        self.y_train = np.delete(self.y_train, self.y_train[:,0]>0.01, axis=0)
-        self.x_test = np.delete(self.x_test, self.y_test[:,0]>0.01, axis=0)
-        self.y_test = np.delete(self.y_test, self.y_test[:,0]>0.01, axis=0)
+        # self.x_train = np.delete(self.x_train, self.y_train[:,0]>0.01, axis=0)
+        # self.y_train = np.delete(self.y_train, self.y_train[:,0]>0.01, axis=0)
+        # self.x_test = np.delete(self.x_test, self.y_test[:,0]>0.01, axis=0)
+        # self.y_test = np.delete(self.y_test, self.y_test[:,0]>0.01, axis=0)
 
     def fit(self, **kwargs):
 
