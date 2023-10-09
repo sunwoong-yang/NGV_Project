@@ -119,7 +119,12 @@ class Optimizer():
             x_optimized = results_.X
             y_optimized = results_.F
             if method == "random":
-                pareto_idx = np.random.choice(range(0, x_optimized.shape[0]), size=num_pts_, replace=False)
+                try:
+                    pareto_idx = np.random.choice(range(0, x_optimized.shape[0]), size=num_pts_, replace=False)
+                except ValueError:
+                    print("Population in Pareto solutions is smaller than the number of query points you are trying\n"
+                          "Please decrease the number of query points")
+
             elif method == "even":
                 pareto_idx = np.linspace(0, x_optimized.shape[0], num_pts).astype(int)
             else:

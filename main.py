@@ -3,8 +3,8 @@ from src.Optimizer import Optimizer
 from src.Scatter import Scatter
 from sklearn.gaussian_process.kernels import ConstantKernel, Matern, RBF
 
-proj_name = "231009_lhs300"
-excel_name = "lhs300_init.xlsx"
+proj_name = "231009_LDW"
+excel_name = "lhs600_init_re.xlsx"
 
 ddo = DDO(proj_name)
 ddo.read_excel(file_name=excel_name, train_ratio=0.8, coef_outlier=2)
