@@ -25,7 +25,9 @@ class Optimizer():
                verbose=False)
 
         if not Bayesian:
-            res.F = res.F * self.ddo_cls.QoI_direction
+            res.F = res.F * self.ddo_cls.QoI_direction_obj
+            if self.ddo_cls.n_con != 0:
+                res.G = res.G * self.ddo_cls.QoI_direction_con + self.ddo_cls.value_con
         else: # If Bayesian, convert the sign of res.F since EI was maximized
             res.F *= -1.
         res.F = res.F[res.F[:, 0].argsort()]  # Rearrage res by first QoI
@@ -44,16 +46,28 @@ class Optimizer():
             def __init__(self):
                 super().__init__(n_var=ddo_cls.n_var,
                                  n_obj=ddo_cls.n_obj,
+                                 n_ieq_constr=ddo_cls.n_con,
                                  xl=np.array([0] * ddo_cls.n_var),
                                  xu=np.array([1] * ddo_cls.n_var))
 
             def _evaluate(self, x, out, *args, **kwargs):
                 if not Bayesian:
-                    f = np.hsplit(ddo_cls.predict(x.reshape(1,-1)), indices_or_sections = ddo_cls.n_obj)
-                    f = np.array(f).reshape(1,-1) * ddo_cls.QoI_direction
-                if Bayesian:
+                    pred_values = ddo_cls.predict(x.reshape(1, -1))
+                    f = np.hsplit(pred_values[:, :ddo_cls.n_obj],
+                                  indices_or_sections=ddo_cls.n_obj)
+                    f = np.array(f).reshape(1,-1) * ddo_cls.QoI_direction_obj
+
+                    if ddo_cls.n_con != 0:
+                        g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
+                                      indices_or_sections=ddo_cls.n_con)
+                        g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
+
+                else:
                     f = self.cal_EI(x.reshape(1,-1)) * -1. # Since EI should be maximized
+
                 out["F"] = [f]
+                if ddo_cls.n_con != 0:
+                    out["G"] = [g]
 
             def cal_EI(self, x, xi=0.0):
                 mu, std = ddo_cls.predict(x, return_std=True)
@@ -62,11 +76,11 @@ class Optimizer():
 
                 ei = np.zeros((4))
                 for y_idx in range(mu.shape[1]):
-                    if ddo_cls.QoI_direction[y_idx] == 1.:  # minimization case
+                    if ddo_cls.QoI_direction_obj[y_idx] == 1.:  # minimization case
                         mu_train_opt = np.min(mu_train[y_idx])
                         imp = mu_train_opt - mu[:,y_idx] - xi
 
-                    elif ddo_cls.QoI_direction[y_idx] == -1.:  # maximization case
+                    elif ddo_cls.QoI_direction_obj[y_idx] == -1.:  # maximization case
                         mu_train_opt = np.max(mu_train[y_idx])
                         imp = mu[:,y_idx] - mu_train_opt - xi
 
@@ -128,8 +142,11 @@ class Optimizer():
 
     def save(self, res, filename=""):
         x_optimized = res.X
-        y_optimized = res.F
-        write_data = pd.DataFrame(np.concatenate([x_optimized, y_optimized],axis=1))
+        if self.ddo_cls.n_con != 0:
+            y_optimized = np.hstack((res.F, res.G))
+        else:
+            y_optimized = res.F
+        write_data = pd.DataFrame(np.hstack((x_optimized, y_optimized)))
         write_data.columns = self.ddo_cls.x_list + self.ddo_cls.y_list
         self.write_data = write_data
         if not os.path.exists(f"Projects/{self.ddo_cls.proj_name}/results"):

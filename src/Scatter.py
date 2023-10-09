@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import glob
 
 class Scatter():
     def __init__(self, ddo_cls):
@@ -20,6 +21,9 @@ class Scatter():
         self.y_true = y_true
         self.y_pred = y_pred
 
+        files = glob.glob(f"Projects/{self.ddo_cls.proj_name}/figures/*")
+        for file in files:
+            os.remove(file)
 
         for y_idx in range(self.ddo_cls.n_obj):
 
