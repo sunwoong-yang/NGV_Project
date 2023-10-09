@@ -6,10 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="bf8374ed-61e8-4f8f-9996-8ffbc3910930" name="Changes" comment="230811">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projects/231009_lhs300/results/Opt_231009_lhs300.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Projects/231009_lhs300/results/Opt_231009_lhs300.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projects/231009_lhs600/results/Opt_231009_lhs600.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Projects/231009_lhs600/results/Opt_231009_lhs600.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DDO.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DDO.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Scatter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scatter.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -160,7 +160,7 @@
       <workItem from="1691719955479" duration="737000" />
       <workItem from="1691988172617" duration="54942000" />
       <workItem from="1693379294010" duration="554000" />
-      <workItem from="1696555734177" duration="14524000" />
+      <workItem from="1696555734177" duration="17573000" />
     </task>
     <task id="LOCAL-00001" summary="230811">
       <created>1691718712707</created>
@@ -219,7 +219,7 @@
     <SUITE FILE_PATH="coverage/test_py$test.coverage" NAME="test Coverage Results" MODIFIED="1687141184263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/test_py$Test_function_2.coverage" NAME="Test_function_2 Coverage Results" MODIFIED="1687505352860" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examples" />
     <SUITE FILE_PATH="coverage/test_py$Test_function_8.coverage" NAME="Test_function_8 Coverage Results" MODIFIED="1687766737442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examples" />
-    <SUITE FILE_PATH="coverage/DataDriven_opt$main.coverage" NAME="main Coverage Results" MODIFIED="1696850153014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DataDriven_opt$main.coverage" NAME="main Coverage Results" MODIFIED="1696853416287" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/main_py$PrePost.coverage" NAME="PrePost Coverage Results" MODIFIED="1680135897042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PrePost" />
     <SUITE FILE_PATH="coverage/test_py$Test_function_5.coverage" NAME="Test_function_5 Coverage Results" MODIFIED="1687509348349" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examples" />
     <SUITE FILE_PATH="coverage/test_py$Test_function_2_MO.coverage" NAME="Test_function_2_MO Coverage Results" MODIFIED="1687511930867" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examples" />

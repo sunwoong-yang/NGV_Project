@@ -61,21 +61,26 @@ class Optimizer():
                         g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
                                       indices_or_sections=ddo_cls.n_con)
                         g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
+                        out["G"] = [g]
 
-                else:
+                else: # if Bayesian
+
                     f = self.cal_EI(x.reshape(1,-1)) * -1. # Since EI should be maximized
-
+                    if Bayesian:
+                        pred_values = ddo_cls.predict(x.reshape(1, -1))
+                        g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
+                                      indices_or_sections=ddo_cls.n_con)
+                        g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
+                        out["G"] = [g]
                 out["F"] = [f]
-                if ddo_cls.n_con != 0:
-                    out["G"] = [g]
 
             def cal_EI(self, x, xi=0.0):
                 mu, std = ddo_cls.predict(x, return_std=True)
                 mu_train = ddo_cls.predict(ddo_cls.x_train)
                 std = std.reshape(-1, 1)
 
-                ei = np.zeros((4))
-                for y_idx in range(mu.shape[1]):
+                ei = np.zeros((ddo_cls.n_obj))
+                for y_idx in range(ddo_cls.n_obj):
                     if ddo_cls.QoI_direction_obj[y_idx] == 1.:  # minimization case
                         mu_train_opt = np.min(mu_train[y_idx])
                         imp = mu_train_opt - mu[:,y_idx] - xi
