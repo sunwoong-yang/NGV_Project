@@ -25,7 +25,7 @@ class Scatter():
         for file in files:
             os.remove(file)
 
-        for y_idx in range(self.ddo_cls.n_obj):
+        for y_idx in range(self.ddo_cls.n_obj + self.ddo_cls.n_con):
 
             Rsq = self.ddo_cls.gpr_models.models[y_idx].score(x_pred, y_true[:,y_idx])
             y_true_ = self.y_true[:,y_idx]
@@ -36,6 +36,7 @@ class Scatter():
                     os.makedirs(f"Projects/{self.ddo_cls.proj_name}/figures")
                 plt.close(fig)
                 fig.savefig(f"Projects/{self.ddo_cls.proj_name}/figures/{self.ddo_cls.y_list[y_idx]}.png")
+
     def make_plot(self, y_true, y_pred, y_idx=0, Rsq=None):
         sns.set_style("white")
         sns.set_palette("Set2")

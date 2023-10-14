@@ -24,14 +24,17 @@ class Optimizer():
                save_history=True,
                verbose=False)
 
+        # Restore the original values of res
         if not Bayesian:
             res.F = res.F * self.ddo_cls.QoI_direction_obj
-            if self.ddo_cls.n_con != 0:
-                res.G = res.G * self.ddo_cls.QoI_direction_con + self.ddo_cls.value_con
         else: # If Bayesian, convert the sign of res.F since EI was maximized
             res.F *= -1.
-        res.F = res.F[res.F[:, 0].argsort()]  # Rearrage res by first QoI
-        res.X = res.X[res.F[:, 0].argsort()]  # Rearrage res by first QoI
+
+        res.F = res.F[res.F[:, 0].argsort()]  # Rearrage res.F by first QoI
+        res.X = res.X[res.F[:, 0].argsort()]  # Rearrage res.X by first QoI
+        if self.ddo_cls.n_con != 0:
+            res.G = res.G * self.ddo_cls.QoI_direction_con + self.ddo_cls.value_con
+            res.G = res.G[res.F[:, 0].argsort()] # Rearrage res.G by first QoI
 
         return res
 
@@ -57,21 +60,29 @@ class Optimizer():
                                   indices_or_sections=ddo_cls.n_obj)
                     f = np.array(f).reshape(1,-1) * ddo_cls.QoI_direction_obj
 
-                    if ddo_cls.n_con != 0:
-                        g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
-                                      indices_or_sections=ddo_cls.n_con)
-                        g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
-                        out["G"] = [g]
+                    # if ddo_cls.n_con != 0:
+                    #     g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
+                    #                   indices_or_sections=ddo_cls.n_con)
+                    #     g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
+                    #     out["G"] = [g]
 
                 else: # if Bayesian
 
                     f = self.cal_EI(x.reshape(1,-1)) * -1. # Since EI should be maximized
-                    if Bayesian:
-                        pred_values = ddo_cls.predict(x.reshape(1, -1))
-                        g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
-                                      indices_or_sections=ddo_cls.n_con)
-                        g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
-                        out["G"] = [g]
+                    pred_values = ddo_cls.predict(x.reshape(1, -1))
+                    # pred_values = ddo_cls.predict(x.reshape(1, -1))
+                    # if ddo_cls.n_con != 0:
+                    #     g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
+                    #                   indices_or_sections=ddo_cls.n_con)
+                    #     g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
+                    #     out["G"] = [g]
+
+                if ddo_cls.n_con != 0:
+                    g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
+                                  indices_or_sections=ddo_cls.n_con)
+                    g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
+                    out["G"] = [g]
+
                 out["F"] = [f]
 
             def cal_EI(self, x, xi=0.0):
@@ -82,11 +93,10 @@ class Optimizer():
                 ei = np.zeros((ddo_cls.n_obj))
                 for y_idx in range(ddo_cls.n_obj):
                     if ddo_cls.QoI_direction_obj[y_idx] == 1.:  # minimization case
-                        mu_train_opt = np.min(mu_train[y_idx])
+                        mu_train_opt = np.min(mu_train[:,y_idx])
                         imp = mu_train_opt - mu[:,y_idx] - xi
-
                     elif ddo_cls.QoI_direction_obj[y_idx] == -1.:  # maximization case
-                        mu_train_opt = np.max(mu_train[y_idx])
+                        mu_train_opt = np.max(mu_train[:,y_idx])
                         imp = mu[:,y_idx] - mu_train_opt - xi
 
                     Z = imp / std[y_idx]
