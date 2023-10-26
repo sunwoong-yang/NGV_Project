@@ -81,8 +81,6 @@ class Optimizer():
                     g = np.hsplit(pred_values[:, ddo_cls.n_obj:],
                                   indices_or_sections=ddo_cls.n_con)
                     g = (np.array(g).reshape(1, -1) - ddo_cls.value_con) * ddo_cls.QoI_direction_con
-                    #Hard-coding
-                    g[:,-1] = pred_values[:,0] - pred_values[:,1]
 
                     out["G"] = [g]
 
