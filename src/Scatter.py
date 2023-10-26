@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import glob
+from sklearn.metrics import r2_score
 
 class Scatter():
     def __init__(self, ddo_cls):
@@ -27,7 +28,10 @@ class Scatter():
 
         for y_idx in range(self.ddo_cls.n_obj + self.ddo_cls.n_con):
 
-            Rsq = self.ddo_cls.gpr_models.models[y_idx].score(x_pred, y_true[:,y_idx])
+            if self.ddo_cls.model_type == "GPR":
+                Rsq = self.ddo_cls.model.models[y_idx].score(x_pred, y_true[:,y_idx])
+            else:
+                Rsq = r2_score(y_true[:,y_idx], self.ddo_cls.predict(x_pred)[:,y_idx])
             y_true_ = self.y_true[:,y_idx]
             y_pred_ = self.y_pred[:,y_idx]
             fig, ax = self.make_plot(y_true_, y_pred_, y_idx, Rsq)

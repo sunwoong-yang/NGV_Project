@@ -1,8 +1,11 @@
 from surrogate_model.GPRs import GPRs
+from surrogate_model.DE import DeepEnsemble
 import pandas as pd
 from sklearn.gaussian_process.kernels import ConstantKernel, Matern, RBF
 import numpy as np
 from PrePost.PrePost import reject_outliers
+import torch.optim as optim
+import torch.nn as nn
 
 class DDO(): # Data-Driven Optimization
     def __init__(self, proj_name=""):
@@ -70,20 +73,39 @@ class DDO(): # Data-Driven Optimization
         # self.x_test = np.delete(self.x_test, self.y_test[:,0]>0.01, axis=0)
         # self.y_test = np.delete(self.y_test, self.y_test[:,0]>0.01, axis=0)
 
-    def fit(self, **kwargs):
+    def fit(self, model="GPR", **kwargs):
+        self.model_type = model
+        if model == "GPR":
+            kernel = ConstantKernel() * Matern(length_scale=[1.]*self.n_var, nu=2.5)
+            # kernel = ConstantKernel() * RBF(length_scale=[1.]*self.n_var)
+            # kernel = ConstantKernel() * RBF(length_scale=1.)
+            self.model = GPRs(**kwargs)
+            self.model.fit(self.x_train, self.y_train, )
+        elif model == "DE":
+            layers = kwargs["layers"]
+            lr = kwargs["lr"]
+            iter = kwargs["iter"]
+            # {"optimizer": "adam", "lr": [1e-3] * 3, "loss_weights": [1] * 7}
+            self.model = DeepEnsemble(self.n_var, layers, "GELU", self.n_obj+self.n_con, num_models=5)
+            criterion_ = nn.MSELoss()
 
-        kernel = ConstantKernel() * Matern(length_scale=[1.]*self.n_var, nu=2.5)
-        # kernel = ConstantKernel() * RBF(length_scale=[1.]*self.n_var)
-        # kernel = ConstantKernel() * RBF(length_scale=1.)
-        self.gpr_models = GPRs(**kwargs)
-        self.gpr_models.fit(self.x_train, self.y_train)
-
+            if len(lr) != len(iter):
+                raise Exception("Length of lists 'lr' and 'iter' do not match")
+            else:
+                for lr_, iter_ in zip(lr, iter):
+                    optimizer_ = optim.Adam(self.model.parameters(), lr=lr_)
+                    self.model.fit(self.x_train, self.y_train, iter_, optimizer_)
     def predict(self, x=None, return_std=False):
-
+        # if self.model_type == "GPR":
         if x is None: # When the x for the prediction is not given, perform prediction with x_test datatset
-            y_pred = self.gpr_models.predict(self.x_test, return_std=return_std)
+            y_pred = self.model.predict(self.x_test, return_std=return_std)
         else:
-            y_pred = self.gpr_models.predict(x, return_std=return_std)
+            y_pred = self.model.predict(x, return_std=return_std)
+        # elif self.model_type == "DE":
+        #     if x is None: # When the x for the prediction is not given, perform prediction with x_test datatset
+        #         y_pred = self.model.predict(self.x_test, return_std=return_std)
+        #     else:
+        #         y_pred = self.model.predict(x, return_std=return_std)
 
         return y_pred
 

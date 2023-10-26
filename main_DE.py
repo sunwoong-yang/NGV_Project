@@ -3,14 +3,20 @@ from src.Optimizer import Optimizer
 from src.Scatter import Scatter
 from sklearn.gaussian_process.kernels import ConstantKernel, Matern, RBF
 
-proj_name = "231009_lhs600"
+proj_name = "231009_lhs600_DE"
 excel_name = "lhs600_init.xlsx"
 
 ddo = DDO(proj_name)
 ddo.read_excel(file_name=excel_name, train_ratio=0.8, coef_outlier=2)
 
-kernel = ConstantKernel() * Matern(length_scale=[1.]*ddo.n_var, nu=2.5, length_scale_bounds=(1e-5, 1e+7))
-ddo.fit(kernel=kernel, n_restarts_optimizer=1, random_state=42, normalize_y=True)
+# kernel = ConstantKernel() * Matern(length_scale=[1.]*ddo.n_var, nu=2.5, length_scale_bounds=(1e-5, 1e+7))
+DE_kwargs = {"layers": [60,60,60],
+             "lr":[1e-2,1e-3],
+             "iter":[500,2000]}
+# layers = kwargs["layers"]
+#             lr = kwargs["lr"]
+#             iter = kwargs["iter"]
+ddo.fit(model="DE", **DE_kwargs)
 
 plot_  = Scatter(ddo)
 plot_.do(save_fig=True)
